@@ -1,6 +1,69 @@
 import pandas as pd
 
-auth = 'user'
+auth = {'auth': 'user'}
+user_login = {'username': ''}
+
+def rating():
+    header = ['uname_user', 'id_bank', 'rating']
+
+    bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';')
+    data_rating = pd.read_csv('rating.csv', sep=';')
+
+    print('\n')
+    print(bank_sampah)
+    print('\n')
+
+    choice = input('Silakan nomor pilih bank sampah yang ingin diberi rating (q untuk quit): ')
+
+    if(choice == 'q'):
+        if(auth['auth'] == 'admin'):
+            choiceAdmin()
+        elif(auth['auth'] == 'user'):
+            choiceUser()
+        else:
+            pass
+    elif(int(choice) in bank_sampah.index):
+        # filter data rating
+        filtered_data = data_rating[
+            (data_rating['uname_user'] == user_login['username']) &
+            (data_rating['id_bank'] == int(choice))
+        ]
+
+        if(not filtered_data.empty):
+            rating_value = filtered_data['rating'].values[0]
+            print(f'\nRating Anda untuk {bank_sampah['nama bank sampah'][int(choice)]} adalah {rating_value}!')
+
+            if(auth['auth'] == 'admin'):
+                choiceAdmin()
+            elif(auth['auth'] == 'user'):
+                choiceUser()
+        else:
+            user_rating = input(f'\nMasukkan rating untuk {bank_sampah['nama bank sampah'][int(choice)]}(1-5): ')
+
+            if(user_rating == '1' or user_rating == '2' or user_rating == '3' or user_rating == '4' or user_rating == '5'):
+                data = [[user_login['username'], choice, user_rating]]
+
+                new_data = pd.DataFrame(data, columns=header)
+                new_data.to_csv('rating.csv', mode='a', sep=';',header=False, index=False)
+
+                print(f'Terimakasih telah memberi penilaian untuk {bank_sampah['nama bank sampah'][int(choice)]}!')
+            else:
+                print('\nSilakan rating bank sampah dari 1 sampai 5!')
+                rating()
+
+    else:
+        print('\nSilakan pilih opsi yang tersedia!')
+        rating()
+
+
+    # print(data_rating['id_bank'])
+
+    # for i in range(len(data_rating['id_bank'])):
+    #     if(data_rating['id_bank'][i] > 2):
+    #         data_rating.at[i, 'id_bank'] -= 1
+    #         print(data_rating['id_bank'][i])
+
+    # data_rating.to_csv('rating.csv', sep=';', index=False)
 
 def search():
     bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';')
@@ -121,7 +184,7 @@ def crud():
 
         if(selected_bank == 'q'):
             crud()
-        elif( int(selected_bank) in bank_sampah.index):
+        elif(int(selected_bank) in bank_sampah.index):
             data_dipilih = bank_sampah.iloc[int(selected_bank)]
 
             nama_bank = data_dipilih['nama bank sampah']
@@ -173,7 +236,10 @@ def ecoscalc():
     selected_bank = input('\nPilih bank sampah berdasarkan nomor bank sampah (q jika tidak ada): ')
 
     if(selected_bank == 'q'):
-        choiceAdmin()
+        if(auth['auth'] == 'admin'):
+            choiceAdmin()
+        elif(auth['auth'] == 'user'):
+            choiceUser()
     elif int(selected_bank) in bank_sampah.index:
         data_dipilih = bank_sampah.iloc[int(selected_bank)]
         
@@ -191,9 +257,9 @@ def ecoscalc():
         if(next_step == 1):
             ecoscalc()
         elif(next_step == 2):
-            if(auth == 'admin'):
+            if(auth['auth'] == 'admin'):
                 choiceAdmin()
-            elif(auth == 'user'):
+            elif(auth['auth'] == 'user'):
                 choiceUser()
         else:
             print('Silakan pilih berdasarkan pilihan yang tersedia!')
@@ -205,19 +271,24 @@ def ecoscalc():
 
 def choiceAdmin():
     print('\n' + 30 * '=')
-    choice = int(input('\n[1]EcosCalc\n[2]CRUD Bank Sampah\n[3]Search Bank Sampah\n[4]Rating Bank Sampah\n[5]Logout\n[6]Exit\nSilakan pilih fitur berdasarkan angka: '))
+    choice = input('\n[1]EcosCalc\n[2]CRUD Bank Sampah\n[3]Search Bank Sampah\n[4]Rating Bank Sampah\n[5]Logout\n[6]Exit\nSilakan pilih fitur berdasarkan angka: ')
 
-    if(int(choice) == 1):
-        ecoscalc()
-    elif(int(choice) == 2):
-        crud()
-    elif(int(choice) == 3):
-        search()
-    elif(int(choice) == 5):
-        print('\nLogout berhasil!!!')
-        login()
-    elif(int(choice) == 6):
-        pass
+    if(choice == '1' or choice == '2' or choice == '3' or choice == '4' or choice == '5' or choice == '6'):
+        if(int(choice) == 1):
+            ecoscalc()
+        elif(int(choice) == 2):
+            crud()
+        elif(int(choice) == 3):
+            search()
+        elif(int(choice) == 4):
+            rating()
+        elif(int(choice) == 5):
+            print('\nLogout berhasil!!!')
+            login()
+        elif(int(choice) == 6):
+            print('\n' + 30 * '=')
+            print('\nTerimakasih telah menggunakan EcoSphera!\n')
+            pass
     else:
         print('Silakan pilih berdasarkan angka atau pilihan yang tersedia')
         choiceAdmin()
@@ -234,9 +305,15 @@ def choiceUser():
     elif(choice == 2):
         print('\n', bank_sampah)
         choiceUser()
+    elif(choice == 3):
+        search()
+    elif(choice == 4):
+        rating()
     elif(choice == 5):
         login()
     elif(choice == 6):
+        print('\n' + 30 * '=')
+        print('\nTerimakasih telah menggunakan EcoSphera!\n')
         pass
     else:
         print('Silakan pilih berdasarkan angka atau pilihan yang tersedia')
@@ -246,6 +323,8 @@ def choicePengelola():
     print('\nFitur ini masih dalam pengembangan!!!')
     pass
 
+
+chance_login = {'chance': 2}
 
 def login():
     users = pd.read_csv('users.csv', sep=';')
@@ -258,25 +337,32 @@ def login():
 
     validate = users[(users['username'] == uname) & (users['password'] == pw)]
 
-    if(not validate.empty):
-        print('\n' + 30 * '=')
-        print('Login berhasil!!!')
-        role = validate.iloc[0]['role']
-        if(role == 'admin'):
-            auth = 'admin'
-            choiceAdmin()
-        elif(role == 'user'):
-            auth = 'user'
-            choiceUser()
-        elif(role == 'pengelola'):
-            auth = 'pengelola'
-            print('Fitur ini masih dalam pengembangan!')
-            choicePengelola()
-        else:
-            print('laahh siapa dong ini')
+    if(chance_login['chance'] == 0):
+        chance_login['chance'] = 2
+        choice1()
     else:
-        print('Username atau password salah! Silakan coba lagi!')
-        login()
+        if(not validate.empty):
+            print('\n' + 30 * '=')
+            print('Login berhasil!!!')
+            role = validate.iloc[0]['role']
+
+            user_login['username'] = uname
+
+            if(role == 'admin'):
+                auth['auth'] = 'admin'
+                choiceAdmin()
+            elif(role == 'user'):
+                auth['auth'] = 'user'
+                choiceUser()
+            elif(role == 'pengelola'):
+                auth['auth'] = 'pengelola'
+                choicePengelola()
+            else:
+                print('laahh siapa dong ini')
+        else:
+            print(f'\nUsername atau password salah! Silakan coba lagi! Kesempatan anda {chance_login['chance']}x lagi!')
+            chance_login['chance'] -= 1
+            login()
 
 
 def register():
@@ -321,16 +407,19 @@ def choice1():
     print('\n' + 30 * '=')
     print('Selamat Datang di EcoSphera!!!')
     
-    choice = int(input('\n[1]Register\n[2]Login\n[3]Exit\nSilakan pilih Login atau Register: '))
+    choice = input('\n[1]Register\n[2]Login\n[3]Exit\nSilakan pilih Login atau Register: ')
 
-    if(choice == 1):
-        register()
-    elif(choice == 2):
-        login()
-    elif(choice == 3):
-        pass
+    if(choice == '1' or choice == '2' or choice == '3'):
+        if(int(choice) == 1):
+            register()
+        elif(int(choice) == 2):
+            login()
+        elif(int(choice) == 3):
+            print('\nTerimakasih telah menggunakan EcoSphera!\n')
+            pass
     else:
-        print('Silakan pilih 1, 2 atau 3!!!')
+        print('\nSilakan opsi yang tersedia!')
+        choice1()
 
 
 choice1()
