@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 auth = {'auth': 'user'}
 user_login = {'username': ''}
@@ -55,15 +56,6 @@ def rating():
         print('\nSilakan pilih opsi yang tersedia!')
         rating()
 
-
-    # print(data_rating['id_bank'])
-
-    # for i in range(len(data_rating['id_bank'])):
-    #     if(data_rating['id_bank'][i] > 2):
-    #         data_rating.at[i, 'id_bank'] -= 1
-    #         print(data_rating['id_bank'][i])
-
-    # data_rating.to_csv('rating.csv', sep=';', index=False)
 
 def search():
     bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';')
@@ -147,7 +139,10 @@ def search():
                 print("\nTidak ada hasil yang mendekati harga sampah tersebut.")
                 search()
     elif(choice == 6):
-        choiceAdmin()
+        if(auth['auth'] == 'admin'):
+            choiceAdmin()
+        elif(auth['auth'] == 'user'):
+            choiceUser()
     else:
         print('Silakan pilih kategori berdasarkan angka yang tersedia!')
         search()
@@ -370,9 +365,9 @@ def register():
 
     print('\n' + 30 * '=')
 
-    regisChoice = int(input('\n[1]User\n[2]Pengelola\n[3]Kembali\n[4]Exit\nSilakan pilih register sebagai: '))
+    regisChoice = input('\n[1]User\n[2]Pengelola\n[3]Kembali\n[4]Exit\nSilakan pilih register sebagai: ')
 
-    if(regisChoice == 1 or regisChoice == 2):
+    if(regisChoice == '1' or regisChoice == '2'):
         def regis2():
             uname = input('\nMasukkan username: ')
             pw = input('Masukkan password: ')
@@ -380,6 +375,12 @@ def register():
             notUnique = users[(users['username'] == uname)]
             if(not notUnique.empty):
                 print('\nUsername sudah terdaftar! Silakan pakai username baru!')
+                regis2()
+            elif(uname.replace(' ', '') == '' or pw.replace(' ', '') == ''):
+                print('\nUsername atau password tidak boleh kosong!')
+                choice1()
+            elif(not re.match(r'^\w+$', uname)):
+                print('Username hanya boleh mengandung huruf, angka dan garis bawah!')
                 regis2()
             else:
                 header = ['username', 'password', 'role']
@@ -395,9 +396,9 @@ def register():
                 print('\nSelamat akun anda telah berhasil dibuat!!! Silakan login terlebih dahulu!')
                 login()
         regis2()
-    elif(regisChoice == 3):
+    elif(regisChoice == '3'):
         choice1()
-    elif(regisChoice == 4):
+    elif(regisChoice == '4'):
         pass
     else:
         print('Silakan pilih berdasarkan angka yang tersedia!!!')
