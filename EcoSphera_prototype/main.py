@@ -47,13 +47,25 @@ def rating():
                 new_data = pd.DataFrame(data, columns=header)
                 new_data.to_csv('rating.csv', mode='a', sep=';',header=False, index=False)
 
+                new_data_rating = pd.read_csv('rating.csv', sep=';')
+
                 # simpan data rating di data bank sampah
                 data_dipilih = bank_sampah.iloc[int(choice)]
                 
+                filtered_rating = new_data_rating[new_data_rating['id_bank'] == int(choice)]
 
-                bank_sampah.loc[int(choice), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik']] = [data_dipilih['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik']]
+                if(not filtered_rating.empty):
+                    avg_rating = filtered_rating['rating'].mean()
+                    f_avg_rating = f'{avg_rating:,.1f}'
+
+                bank_sampah.loc[int(choice), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']] = [data_dipilih['nama bank sampah'],  data_dipilih['nama pengelola'], data_dipilih['lokasi'], data_dipilih['kontak pengelola'], data_dipilih['harga sampah organik'], data_dipilih['harga sampah non-organik'], float(f_avg_rating)]
+                bank_sampah.to_csv('data_bank_sampah.csv', index=False, sep=';')
 
                 print(f'Terimakasih telah memberi penilaian untuk {bank_sampah['nama bank sampah'][int(choice)]}!')
+                if(auth['auth'] == 'admin'):
+                    choiceAdmin()
+                elif(auth['auth'] == 'user'):
+                    choiceUser()
             else:
                 print('\nSilakan rating bank sampah dari 1 sampai 5!')
                 rating()
@@ -63,28 +75,21 @@ def rating():
         rating()
 
 
-    # print(data_rating['id_bank'])
-
-    # for i in range(len(data_rating['id_bank'])):
-    #     if(data_rating['id_bank'][i] > 2):
-    #         data_rating.at[i, 'id_bank'] -= 1
-    #         print(data_rating['id_bank'][i])
-
-    # data_rating.to_csv('rating.csv', sep=';', index=False)
-
 def search():
     bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';')
 
     print('\n' + 30 * '=')
-    choice = int(input('\n[1]Nama Bank Sampah\n[2]Nama Pengelola Bank Sampah\n[3]Lokasi Bank Sampah\n[4]Harga Sampah Organik\n[5]Harga Sampah Non Organik\n[6]Kembali\nCari Bank Sampah berdasarkan kategori: '))
+    choice = input('\n[1]Nama Bank Sampah\n[2]Nama Pengelola Bank Sampah\n[3]Lokasi Bank Sampah\n[4]Harga Sampah Organik\n[5]Harga Sampah Non Organik\n[6]Kembali\nCari Bank Sampah berdasarkan kategori: ')
 
-    if(choice == 1):
+    if(choice == '1'):
         nama_bank = input('Masukkan nama bank sampah yang ingin dicari (q untuk quit): ')
 
         data_bank = bank_sampah[bank_sampah['nama bank sampah'].str.contains(nama_bank, case=False, na=False)]
 
         if(nama_bank == 'q'):
             choiceAdmin()
+        elif(nama_bank.replace(' ', '') == ''):
+            print('Input pencarian tidak boleh kosong!')
         else:
             if not data_bank.empty:
                 print('\n')
@@ -93,13 +98,15 @@ def search():
             else:
                 print("\nTidak ada hasil yang mendekati nama bank sampah tersebut.")
                 search()
-    elif(choice == 2):
+    elif(choice == '2'):
         nama_pengelola = input('Masukkan nama pengelola bank sampah yang ingin dicari (q untuk quit): ')
 
         data_bank = bank_sampah[bank_sampah['nama pengelola'].str.contains(nama_pengelola, case=False, na=False)]
 
         if(nama_pengelola == 'q'):
             choiceAdmin()
+        elif(nama_pengelola.replace(' ', '') == ''):
+            print('Input pencarian tidak boleh kosong!')
         else:
             if not data_bank.empty:
                 print('\n')
@@ -108,13 +115,15 @@ def search():
             else:
                 print("\nTidak ada hasil yang mendekati nama pengelola bank sampah tersebut.")
                 search()
-    elif(choice == 3):
+    elif(choice == '3'):
         lokasi = input('Masukkan lokasi bank sampah yang ingin dicari (q untuk quit): ')
 
         data_bank = bank_sampah[bank_sampah['lokasi'].str.contains(lokasi, case=False, na=False)]
 
         if(lokasi == 'q'):
             choiceAdmin()
+        elif(lokasi.replace(' ', '') == ''):
+            print('Input pencarian tidak boleh kosong!')
         else:
             if not data_bank.empty:
                 print('\n')
@@ -123,13 +132,15 @@ def search():
             else:
                 print("\nTidak ada hasil yang mendekati lokasi bank sampah tersebut.")
                 search()
-    elif(choice == 4):
+    elif(choice == '4'):
         harga_organik = input('Masukkan harga sampah organik yang ingin dicari (q untuk quit): ')
 
         data_bank = bank_sampah[bank_sampah['harga sampah organik'].str.contains(int(harga_organik), case=False, na=False)]
 
         if(harga_organik == 'q'):
             choiceAdmin()
+        elif(harga_organik.replace(' ', '') == ''):
+            print('Input pencarian tidak boleh kosong!')
         else:
             if not data_bank.empty:
                 print('\n')
@@ -138,13 +149,15 @@ def search():
             else:
                 print("\nTidak ada hasil yang mendekati harga sampah tersebut.")
                 search()
-    elif(choice == 5):
+    elif(choice == '5'):
         harga_non_organik = input('Masukkan harga sampah non organik yang ingin dicari (q untuk quit): ')
 
         data_bank = bank_sampah[bank_sampah['harga sampah non-organik'] <= int(harga_non_organik)]
 
         if(harga_non_organik == 'q'):
             choiceAdmin()
+        elif(harga_non_organik.replace(' ', '') == ''):
+            print('Input pencarian tidak boleh kosong!')
         else:
             if not data_bank.empty:
                 print('\n')
@@ -153,7 +166,7 @@ def search():
             else:
                 print("\nTidak ada hasil yang mendekati harga sampah tersebut.")
                 search()
-    elif(choice == 6):
+    elif(choice == '6'):
         if(auth['auth'] == 'admin'):
             choiceAdmin()
         elif(auth['auth'] == 'user'):
@@ -164,7 +177,7 @@ def search():
 
 def crud():
     bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';')
-    header = ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik']
+    header = ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']
 
     print('\n' + 30 * '=')
     choice = int(input('\n[1]Tambah data bank sampah\n[2]Lihat data bank sampah\n[3]Update data bank sampah\n[4]Hapus data bank sampah\n[5]Kembali\nSilakan pilih fitur berdasarkan angka: '))
@@ -176,8 +189,9 @@ def crud():
         kontak = int(input('Masukkan kontak pengelola bank sampah: '))
         organik = int(input('Masukkan harga sampah organik: '))
         non_organik = int(input('Masukkan harga sampah non organik: '))
+        rating = 0
 
-        data = [[nama_bank, nama_pengelola, lokasi, kontak, organik, non_organik]]
+        data = [[nama_bank, nama_pengelola, lokasi, kontak, organik, non_organik, rating]]
 
         new_data =  pd.DataFrame(data, columns=header)
         new_data.to_csv('data_bank_sampah.csv', mode='a', sep=';', header=False, index=False)
@@ -203,6 +217,7 @@ def crud():
             kontak = data_dipilih['kontak pengelola']
             harga_organik = data_dipilih['harga sampah organik']
             harga_non_organik = data_dipilih['harga sampah non-organik']
+            rating = data_dipilih['rating']
 
             print('\nSilakan isi data terbaru, kosongkan jika tidak ada perubahan')
             new_nama_bank = input(f'Masukkan nama bank sampah baru ({nama_bank}): ') or nama_bank
@@ -212,7 +227,7 @@ def crud():
             new_harga_organik = input(f'Masukkan harga baru sampah organik ({harga_organik}): ') or harga_organik
             new_harga_non_organik = input(f'Masukkan harga baru sampah non organik ({harga_non_organik}): ') or harga_non_organik
 
-            bank_sampah.loc[int(selected_bank), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik']] = [new_nama_bank, new_nama_pengelola, new_lokasi, int(new_kontak), int(new_harga_organik), int(new_harga_non_organik)]
+            bank_sampah.loc[int(selected_bank), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']] = [new_nama_bank, new_nama_pengelola, new_lokasi, int(new_kontak), int(new_harga_organik), int(new_harga_non_organik), rating]
 
             bank_sampah.to_csv('data_bank_sampah.csv', index=False, sep=';')
 
@@ -335,7 +350,7 @@ def choiceUser():
 
 def choicePengelola():
     print('\n' + 30 * '=')
-    choice = input('\n[1]EcosCalc\n[2]Kelola Bank Sampah\n[3]Lihat Bank Sampah\n[4]Search Bank Sampah\n[5]Rating Bank Sampah\n[6]Logout\n[7]Exit\nSilakan pilih fitur berdasarkan angka: ')
+    choice = input('\n[1]EcosCalc\n[2]Kelola Bank Sampah\n[3]Lihat Bank Sampah\n[4]Search Bank Sampah\n[5]Logout\n[6]Exit\nSilakan pilih fitur berdasarkan angka: ')
     pass
 
 
