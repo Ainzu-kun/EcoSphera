@@ -42,10 +42,16 @@ def rating():
             user_rating = input(f'\nMasukkan rating untuk {bank_sampah['nama bank sampah'][int(choice)]}(1-5): ')
 
             if(user_rating == '1' or user_rating == '2' or user_rating == '3' or user_rating == '4' or user_rating == '5'):
-                data = [[user_login['username'], choice, user_rating]]
+                data = [[user_login['username'], choice, int(user_rating)]]
 
                 new_data = pd.DataFrame(data, columns=header)
                 new_data.to_csv('rating.csv', mode='a', sep=';',header=False, index=False)
+
+                # simpan data rating di data bank sampah
+                data_dipilih = bank_sampah.iloc[int(choice)]
+                
+
+                bank_sampah.loc[int(choice), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik']] = [data_dipilih['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik']]
 
                 print(f'Terimakasih telah memberi penilaian untuk {bank_sampah['nama bank sampah'][int(choice)]}!')
             else:
@@ -56,6 +62,15 @@ def rating():
         print('\nSilakan pilih opsi yang tersedia!')
         rating()
 
+
+    # print(data_rating['id_bank'])
+
+    # for i in range(len(data_rating['id_bank'])):
+    #     if(data_rating['id_bank'][i] > 2):
+    #         data_rating.at[i, 'id_bank'] -= 1
+    #         print(data_rating['id_bank'][i])
+
+    # data_rating.to_csv('rating.csv', sep=';', index=False)
 
 def search():
     bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';')
@@ -264,6 +279,8 @@ def ecoscalc():
         ecoscalc()
 
 
+# ! CHOICE START
+
 def choiceAdmin():
     print('\n' + 30 * '=')
     choice = input('\n[1]EcosCalc\n[2]CRUD Bank Sampah\n[3]Search Bank Sampah\n[4]Rating Bank Sampah\n[5]Logout\n[6]Exit\nSilakan pilih fitur berdasarkan angka: ')
@@ -285,7 +302,7 @@ def choiceAdmin():
             print('\nTerimakasih telah menggunakan EcoSphera!\n')
             pass
     else:
-        print('Silakan pilih berdasarkan angka atau pilihan yang tersedia')
+        print('\nSilakan pilih berdasarkan angka atau pilihan yang tersedia')
         choiceAdmin()
 
 
@@ -293,33 +310,38 @@ def choiceUser():
     bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';')
 
     print('\n' + 30 * '=')
-    choice = int(input('\n[1]EcosCalc\n[2]Lihat Bank Sampah\n[3]Search Bank Sampah\n[4]Rating Bank Sampah\n[5]Logout\n[6]Exit\nSilakan pilih fitur berdasarkan angka: '))
+    choice = input('\n[1]EcosCalc\n[2]Lihat Bank Sampah\n[3]Search Bank Sampah\n[4]Rating Bank Sampah\n[5]Logout\n[6]Exit\nSilakan pilih fitur berdasarkan angka: ')
 
-    if(choice == 1):
-        ecoscalc()
-    elif(choice == 2):
-        print('\n', bank_sampah)
-        choiceUser()
-    elif(choice == 3):
-        search()
-    elif(choice == 4):
-        rating()
-    elif(choice == 5):
-        login()
-    elif(choice == 6):
-        print('\n' + 30 * '=')
-        print('\nTerimakasih telah menggunakan EcoSphera!\n')
-        pass
+    if(choice == '1' or choice == '2' or choice == '3' or choice == '4' or choice == '5' or choice == '6'):
+        if(int(choice) == 1):
+            ecoscalc()
+        elif(int(choice) == 2):
+            print('\n', bank_sampah)
+            choiceUser()
+        elif(int(choice) == 3):
+            search()
+        elif(int(choice) == 4):
+            rating()
+        elif(int(choice) == 5):
+            login()
+        elif(int(choice) == 6):
+            print('\n' + 30 * '=')
+            print('\nTerimakasih telah menggunakan EcoSphera!\n')
+            pass
     else:
-        print('Silakan pilih berdasarkan angka atau pilihan yang tersedia')
+        print('\nSilakan pilih berdasarkan angka atau pilihan yang tersedia')
+        choiceUser()
 
 
 def choicePengelola():
-    print('\nFitur ini masih dalam pengembangan!!!')
+    print('\n' + 30 * '=')
+    choice = input('\n[1]EcosCalc\n[2]Kelola Bank Sampah\n[3]Lihat Bank Sampah\n[4]Search Bank Sampah\n[5]Rating Bank Sampah\n[6]Logout\n[7]Exit\nSilakan pilih fitur berdasarkan angka: ')
     pass
 
 
-chance_login = {'chance': 2}
+# ! CHOICE END
+
+chance = {'chance': 2}
 
 def login():
     users = pd.read_csv('users.csv', sep=';')
@@ -332,9 +354,13 @@ def login():
 
     validate = users[(users['username'] == uname) & (users['password'] == pw)]
 
-    if(chance_login['chance'] == 0):
-        chance_login['chance'] = 2
+    if(chance['chance'] == 0):
+        chance['chance'] = 2
         choice1()
+    elif(uname.replace(' ', '') == '' or pw.replace(' ', '') == ''):
+        print(f'\nUsername atau password tidak boleh kosong! Silakan coba lagi! Kesempatan anda {chance['chance']}x lagi!')
+        chance['chance'] -= 1
+        login()
     else:
         if(not validate.empty):
             print('\n' + 30 * '=')
@@ -355,8 +381,8 @@ def login():
             else:
                 print('laahh siapa dong ini')
         else:
-            print(f'\nUsername atau password salah! Silakan coba lagi! Kesempatan anda {chance_login['chance']}x lagi!')
-            chance_login['chance'] -= 1
+            print(f'\nUsername atau password salah! Silakan coba lagi! Kesempatan anda {chance['chance']}x lagi!')
+            chance['chance'] -= 1
             login()
 
 
@@ -373,35 +399,44 @@ def register():
             pw = input('Masukkan password: ')
             
             notUnique = users[(users['username'] == uname)]
-            if(not notUnique.empty):
+            if(chance['chance'] == 0):
+                chance['chance'] = 2
+                choice1()
+            elif(not notUnique.empty):
                 print('\nUsername sudah terdaftar! Silakan pakai username baru!')
+                chance['chance'] -= 1
                 regis2()
             elif(uname.replace(' ', '') == '' or pw.replace(' ', '') == ''):
                 print('\nUsername atau password tidak boleh kosong!')
-                choice1()
+                chance['chance'] -= 1
+                regis2()
             elif(not re.match(r'^\w+$', uname)):
-                print('Username hanya boleh mengandung huruf, angka dan garis bawah!')
+                print('Username hanya boleh mengandung huruf, angka dan garis bawah!?')
+                chance['chance'] -= 1
                 regis2()
             else:
                 header = ['username', 'password', 'role']
 
-                if(regisChoice == 1):
+                if(int(regisChoice) == 1):
                     user = [[uname, pw, 'user']]
-                elif(regisChoice == 2):
+                elif(int(regisChoice) == 2):
                     user = [[uname, pw, 'pengelola']]
 
                 new_user = pd.DataFrame(user, columns=header)
                 new_user.to_csv('users.csv', mode='a', sep=';', header=False, index=False)
 
                 print('\nSelamat akun anda telah berhasil dibuat!!! Silakan login terlebih dahulu!')
+                chance['chance'] = 2
                 login()
         regis2()
     elif(regisChoice == '3'):
         choice1()
     elif(regisChoice == '4'):
+        print('\nTerimakasih telah menggunakan EcoSphera!\n')
         pass
     else:
-        print('Silakan pilih berdasarkan angka yang tersedia!!!')
+        print('\nSilakan pilih berdasarkan angka yang tersedia!!!')
+        register()
 
 
 def choice1():
