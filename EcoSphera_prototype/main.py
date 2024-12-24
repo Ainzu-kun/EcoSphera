@@ -84,13 +84,14 @@ def search():
     if(choice == '1'):
         nama_bank = input('Masukkan nama bank sampah yang ingin dicari (q untuk quit): ')
 
-        data_bank = bank_sampah[bank_sampah['nama bank sampah'].str.contains(nama_bank, case=False, na=False)]
-
         if(nama_bank == 'q'):
             choiceAdmin()
         elif(nama_bank.replace(' ', '') == ''):
-            print('Input pencarian tidak boleh kosong!')
+            print('\nInput pencarian tidak boleh kosong!')
+            search()
         else:
+            data_bank = bank_sampah[bank_sampah['nama bank sampah'].str.contains(nama_bank, case=False, na=False)]
+
             if not data_bank.empty:
                 print('\n')
                 print(data_bank)
@@ -101,13 +102,14 @@ def search():
     elif(choice == '2'):
         nama_pengelola = input('Masukkan nama pengelola bank sampah yang ingin dicari (q untuk quit): ')
 
-        data_bank = bank_sampah[bank_sampah['nama pengelola'].str.contains(nama_pengelola, case=False, na=False)]
-
         if(nama_pengelola == 'q'):
             choiceAdmin()
         elif(nama_pengelola.replace(' ', '') == ''):
-            print('Input pencarian tidak boleh kosong!')
+            print('\nInput pencarian tidak boleh kosong!')
+            search()
         else:
+            data_bank = bank_sampah[bank_sampah['nama pengelola'].str.contains(nama_pengelola, case=False, na=False)]
+
             if not data_bank.empty:
                 print('\n')
                 print(data_bank)
@@ -118,13 +120,14 @@ def search():
     elif(choice == '3'):
         lokasi = input('Masukkan lokasi bank sampah yang ingin dicari (q untuk quit): ')
 
-        data_bank = bank_sampah[bank_sampah['lokasi'].str.contains(lokasi, case=False, na=False)]
-
         if(lokasi == 'q'):
             choiceAdmin()
         elif(lokasi.replace(' ', '') == ''):
-            print('Input pencarian tidak boleh kosong!')
+            print('\nInput pencarian tidak boleh kosong!')
+            search()
         else:
+            data_bank = bank_sampah[bank_sampah['lokasi'].str.contains(lokasi, case=False, na=False)]
+
             if not data_bank.empty:
                 print('\n')
                 print(data_bank)
@@ -135,13 +138,17 @@ def search():
     elif(choice == '4'):
         harga_organik = input('Masukkan harga sampah organik yang ingin dicari (q untuk quit): ')
 
-        data_bank = bank_sampah[bank_sampah['harga sampah organik'].str.contains(int(harga_organik), case=False, na=False)]
-
         if(harga_organik == 'q'):
             choiceAdmin()
         elif(harga_organik.replace(' ', '') == ''):
-            print('Input pencarian tidak boleh kosong!')
+            print('\nInput pencarian tidak boleh kosong!')
+            search()
+        elif(not re.match(r'^\d*$', harga_organik)):
+            print('\nPencarian harga organik hanya boleh menginputkan angka saja!')
+            search()
         else:
+            data_bank = bank_sampah[bank_sampah['harga sampah organik'] <= int(harga_organik)]
+
             if not data_bank.empty:
                 print('\n')
                 print(data_bank)
@@ -152,13 +159,17 @@ def search():
     elif(choice == '5'):
         harga_non_organik = input('Masukkan harga sampah non organik yang ingin dicari (q untuk quit): ')
 
-        data_bank = bank_sampah[bank_sampah['harga sampah non-organik'] <= int(harga_non_organik)]
-
         if(harga_non_organik == 'q'):
             choiceAdmin()
         elif(harga_non_organik.replace(' ', '') == ''):
-            print('Input pencarian tidak boleh kosong!')
+            print('\nInput pencarian tidak boleh kosong!')
+            search()
+        elif(not re.match(r'^\d*$', harga_non_organik)):
+            print('\nPencarian harga non organik hanya boleh menginputkan angka saja!')
+            search()
         else:
+            data_bank = bank_sampah[bank_sampah['harga sampah non-organik'] <= int(harga_non_organik)]
+            
             if not data_bank.empty:
                 print('\n')
                 print(data_bank)
@@ -172,7 +183,7 @@ def search():
         elif(auth['auth'] == 'user'):
             choiceUser()
     else:
-        print('Silakan pilih kategori berdasarkan angka yang tersedia!')
+        print('\nSilakan pilih kategori berdasarkan angka yang tersedia!')
         search()
 
 def crud():
@@ -191,7 +202,7 @@ def crud():
         non_organik = input('Masukkan harga sampah non organik: ')
         rating = 0
 
-        print(nama_bank)
+        # regex docs : https://docs.python.org/3/howto/regex.html
 
         if(nama_bank.replace(' ', '') == '' or nama_pengelola.replace(' ', '') == '' or lokasi.replace(' ', '') == '' or kontak.replace(' ', '') == '' or organik.replace(' ', '') == '' or non_organik.replace(' ', '') == ''):
             print('\nInputan tidak boleh kosong! Mohon isi data dengan benar!')
@@ -202,8 +213,17 @@ def crud():
         elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s]{10,}$', lokasi)):
             print('Lokasi hanya boleh berisi huruf, spasi dan angka, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
             crud()
+        elif(not re.match(r'^\d{7,15}$', kontak)):
+            print('Kontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+            crud()
+        elif(not re.match(r'^\d{4,}$', organik or non_organik)):
+            print('Harga sampah hanya boleh berisi angka, minimal 4 angka!')
+            crud()
+        elif(not re.match(r'^[1-9][0-9]*$', organik or non_organik)):
+            print('Harga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+            crud()
 
-        data = [[nama_bank, nama_pengelola, lokasi, f'0{kontak}', organik, non_organik, rating]]
+        data = [[nama_bank, nama_pengelola, lokasi, f'{kontak}', organik, non_organik, rating]]
 
         new_data =  pd.DataFrame(data, columns=header)
         new_data.to_csv('data_bank_sampah.csv', mode='a', sep=';', header=False, index=False)
