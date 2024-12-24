@@ -23,6 +23,9 @@ def rating():
             choiceUser()
         else:
             pass
+    elif(not re.match(r'^\d{1}$', choice)):
+        print('\nSilakan isi berdasarkan angka, hanya boleh berisi 1 angka!')
+        rating()
     elif(int(choice) in bank_sampah.index):
         # filter data rating
         filtered_data = data_rating[
