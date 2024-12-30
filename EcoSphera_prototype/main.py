@@ -31,31 +31,34 @@ def kelolaBank():
 
             if(nama_bank.replace(' ', '') == '' or lokasi.replace(' ', '') == '' or kontak.replace(' ', '') == '' or organik.replace(' ', '') == '' or non_organik.replace(' ', '') == ''):
                 print('\nInputan tidak boleh kosong! Mohon isi data dengan benar!')
-                crud()
+                kelolaBank()
             elif(not re.match(r'^[a-zA-Z\s]{3,}$', nama_bank)):
                 print('Nama bank sampah hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
-                crud()
-            elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s]{10,}$', lokasi)):
-                print('Lokasi hanya boleh berisi huruf, spasi dan angka, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
-                crud()
+                kelolaBank()
+            elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', lokasi)):
+                print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                kelolaBank()
             elif(not re.match(r'^\d{7,15}$', kontak)):
                 print('Kontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
-                crud()
+                kelolaBank()
             elif(not re.match(r'^\d{4,}$', organik or non_organik)):
                 print('Harga sampah hanya boleh berisi angka, minimal 4 angka!')
-                crud()
+                kelolaBank()
             elif(not re.match(r'^[1-9][0-9]*$', organik or non_organik)):
                 print('Harga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
-                crud()
+                kelolaBank()
 
             data = [[nama_bank, nama_pengelola, lokasi, f'{kontak}', organik, non_organik, rating]]
 
             new_data =  pd.DataFrame(data, columns=header)
             new_data.to_csv('data_bank_sampah.csv', mode='a', sep=';', header=False, index=False)
+
+            print('\nData bank sampah berhasil dibuat!')
+            kelolaBank()
         elif(step == '2'):
             choicePengelola()
         else:
-            print('Silakan pilih berdasarkan angka yang tersedia!')
+            print('\nSilakan pilih berdasarkan angka yang tersedia!')
             kelolaBank()
     else:
         print('\n' + 30 * '=')
@@ -63,12 +66,12 @@ def kelolaBank():
 
         # Validasi choice gaboleh kosong
         if(choice.replace(' ', '') == ''):
-            print('Inputan tidak boleh kosong!')
+            print('\nInputan tidak boleh kosong!')
             kelolaBank()
 
         # Validasi choice harus angka dan 1 angka aja
         elif(not re.match(r'^\d{1}$', choice)):
-            print('Input hanya boleh berisi angka! Maximal 1 angka!')
+            print('\nInput hanya boleh berisi angka! Maximal 1 angka!')
             kelolaBank()
 
         # Create data bank sampah pengelola
@@ -85,25 +88,28 @@ def kelolaBank():
                 print('\nInputan tidak boleh kosong! Mohon isi data dengan benar!')
                 kelolaBank()
             elif(not re.match(r'^[a-zA-Z\s]{3,}$', nama_bank)):
-                print('Nama bank sampah hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+                print('\nNama bank sampah hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
                 kelolaBank()
-            elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s]{10,}$', lokasi)):
-                print('Lokasi hanya boleh berisi huruf, spasi dan angka, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+            elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', lokasi)):
+                print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
                 kelolaBank()
             elif(not re.match(r'^\d{7,15}$', kontak)):
-                print('Kontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+                print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
                 kelolaBank()
             elif(not re.match(r'^\d{4,}$', organik or non_organik)):
-                print('Harga sampah hanya boleh berisi angka, minimal 4 angka!')
+                print('\nHarga sampah hanya boleh berisi angka, minimal 4 angka!')
                 kelolaBank()
             elif(not re.match(r'^[1-9][0-9]*$', organik or non_organik)):
-                print('Harga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+                print('\nHarga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
                 kelolaBank()
 
             data = [[nama_bank, nama_pengelola, lokasi, f'{kontak}', organik, non_organik, rating]]
 
             new_data =  pd.DataFrame(data, columns=header)
             new_data.to_csv('data_bank_sampah.csv', mode='a', sep=';', header=False, index=False)
+
+            print('\nData bank sampah berhasil dibuat!')
+            kelolaBank()
 
         # Lihat data bank sampah pengelola
         elif(choice == '2'):
@@ -116,12 +122,12 @@ def kelolaBank():
             selected_bank = input('\nPilih bank sampah yang ingin di update berdasarkan nomor bank sampah (q jika tidak ada): ')
 
             if(selected_bank.replace(' ', '') == ''):
-                print('Inputan tidak boleh kosong!')
+                print('\nInputan tidak boleh kosong!')
                 kelolaBank()
             elif(not re.match(r'^\d{1}$', selected_bank)):
-                print('Input hanya boleh berisi angka! Maximal 1 angka!')
+                print('\nInput hanya boleh berisi angka! Maximal 1 angka!')
                 kelolaBank()
-            elif(int(selected_bank) in bank_sampah_pengelola):
+            elif(int(selected_bank) in bank_sampah_pengelola.index):
                 data_dipilih = bank_sampah.iloc[int(selected_bank)]
 
                 nama_bank = data_dipilih['nama bank sampah']
@@ -139,20 +145,24 @@ def kelolaBank():
                 new_harga_organik = input(f'Masukkan harga baru sampah organik ({harga_organik}): ') or harga_organik
                 new_harga_non_organik = input(f'Masukkan harga baru sampah non organik ({harga_non_organik}): ') or harga_non_organik
 
-                if(not re.match(r'^[a-zA-Z\s]{3,}$', new_nama_bank)):
-                    print('Nama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+
+                if(new_nama_bank.replace(' ', '') == '' or new_lokasi.replace(' ', '') == '' or new_kontak.replace(' ', '') == '' or new_harga_organik.replace(' ', '') == '' or new_harga_non_organik.replace(' ', '') == ''):
+                    print('\nInput tidak boleh kosong atau spasi saja! Mohon input data dengan benar!')
                     kelolaBank()
-                elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s]{10,}$', new_lokasi)):
-                    print('Lokasi hanya boleh berisi huruf, spasi dan angka, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                elif(not re.match(r'^[a-zA-Z\s]{3,}$', new_nama_bank)):
+                    print('\nNama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+                    kelolaBank()
+                elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', new_lokasi)):
+                    print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
                     kelolaBank()
                 elif(not re.match(r'^\d{7,15}$', str(new_kontak))):
-                    print('Kontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+                    print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
                     kelolaBank()
                 elif(not re.match(r'^\d{4,}$', str(new_harga_organik) or str(new_harga_non_organik))):
-                    print('Harga sampah hanya boleh berisi angka, minimal 4 angka!')
+                    print('\nHarga sampah hanya boleh berisi angka, minimal 4 angka!')
                     kelolaBank()
                 elif(not re.match(r'^[1-9][0-9]*$', str(new_harga_organik) or str(new_harga_non_organik))):
-                    print('Harga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+                    print('\nHarga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
                     kelolaBank()
 
                 bank_sampah.loc[int(selected_bank), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']] = [new_nama_bank, nama_pengelola, new_lokasi, new_kontak, new_harga_organik, new_harga_non_organik, rating]
@@ -161,7 +171,7 @@ def kelolaBank():
                 print('\nData bank sampah Anda berhasil diperbarui!')
                 kelolaBank()
             else:
-                print('Silakan pilih bank sampah yang tersedia!')
+                print('\nSilakan pilih bank sampah yang tersedia!')
                 kelolaBank()
 
         # Hapus data bank sampah pengelola
@@ -172,19 +182,19 @@ def kelolaBank():
             if(delete_index.lower() == 'q'):
                 kelolaBank()
             elif(delete_index.replace(' ', '') == ''):
-                print('Input tidak boleh kosong!')
+                print('\nInput tidak boleh kosong!')
                 kelolaBank()
             elif(not re.match(r'^\d{1}$', delete_index)):
-                print('Input hanya boleh berisi angka! Maximal 1 angka!')
+                print('\nInput hanya boleh berisi angka! Maximal 1 angka!')
                 kelolaBank()
-            elif(int(delete_index) in bank_sampah_pengelola):
+            elif(int(delete_index) in bank_sampah_pengelola.index):
                 delete_bank_sampah = bank_sampah.drop(index=int(delete_index))
                 delete_bank_sampah.to_csv('data_bank_sampah.csv', sep=';', index=False)
 
                 print('\nData bank sampah berhasil dihapus!')
                 kelolaBank()
             else:
-                print('Data bank sampah tidak ada dalam pilihan!')
+                print('\nData bank sampah tidak ada dalam pilihan!')
                 kelolaBank()
         
         # Kembali
@@ -439,19 +449,19 @@ def crud():
             print('\nInputan tidak boleh kosong! Mohon isi data dengan benar!')
             crud()
         elif(not re.match(r'^[a-zA-Z\s]{3,}$', nama_bank or nama_pengelola)):
-            print('Nama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+            print('\nNama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
             crud()
-        elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s]{10,}$', lokasi)):
-            print('Lokasi hanya boleh berisi huruf, spasi dan angka, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+        elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', lokasi)):
+            print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
             crud()
         elif(not re.match(r'^\d{7,15}$', kontak)):
-            print('Kontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+            print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
             crud()
         elif(not re.match(r'^\d{4,}$', organik or non_organik)):
-            print('Harga sampah hanya boleh berisi angka, minimal 4 angka!')
+            print('\nHarga sampah hanya boleh berisi angka, minimal 4 angka!')
             crud()
         elif(not re.match(r'^[1-9][0-9]*$', organik or non_organik)):
-            print('Harga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+            print('\nHarga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
             crud()
 
         data = [[nama_bank, nama_pengelola, lokasi, f'{kontak}', organik, non_organik, rating]]
@@ -496,20 +506,23 @@ def crud():
             new_harga_organik = input(f'Masukkan harga baru sampah organik ({harga_organik}): ') or harga_organik
             new_harga_non_organik = input(f'Masukkan harga baru sampah non organik ({harga_non_organik}): ') or harga_non_organik
 
-            if(not re.match(r'^[a-zA-Z\s]{3,}$', new_nama_bank or new_nama_pengelola)):
-                print('Nama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+            if(new_nama_bank.replace(' ', '') == '' or new_nama_pengelola.replace(' ', '') == '' or new_lokasi.replace(' ', '') == '' or new_kontak.replace(' ', '') == '' or new_harga_organik.replace(' ', '') == '' or new_harga_non_organik.replace(' ', '') == ''):
+                print('\nInputan tidak boleh kosong atau spasi saja! Mohon isi data dengan benar!')
                 crud()
-            elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s]{10,}$', new_lokasi)):
-                print('Lokasi hanya boleh berisi huruf, spasi dan angka, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+            elif(not re.match(r'^[a-zA-Z\s]{3,}$', new_nama_bank or new_nama_pengelola)):
+                print('\nNama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+                crud()
+            elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', new_lokasi)):
+                print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
                 crud()
             elif(not re.match(r'^\d{7,15}$', str(new_kontak))):
-                print('Kontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+                print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
                 crud()
             elif(not re.match(r'^\d{4,}$', str(new_harga_organik) or str(new_harga_non_organik))):
-                print('Harga sampah hanya boleh berisi angka, minimal 4 angka!')
+                print('\nHarga sampah hanya boleh berisi angka, minimal 4 angka!')
                 crud()
             elif(not re.match(r'^[1-9][0-9]*$', str(new_harga_organik) or str(new_harga_non_organik))):
-                print('Harga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+                print('\nHarga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
                 crud()
 
             bank_sampah.loc[int(selected_bank), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']] = [new_nama_bank, new_nama_pengelola, new_lokasi, new_kontak, new_harga_organik, new_harga_non_organik, rating]
@@ -592,7 +605,7 @@ def ecoscalc():
         next_step = input('\n[1]Ya\n[2]Tidak\nApakah anda ingin menghitung lagi? ')
 
         if(next_step.replace(' ', '') == ''):
-            print('Input tidak boleh kosong!')
+            print('\nInput tidak boleh kosong!')
             ecoscalc()
         elif(next_step == '1'):
             ecoscalc()
@@ -604,7 +617,7 @@ def ecoscalc():
             elif(auth['auth'] == 'pengelola'):
                 choicePengelola()
         else:
-            print('Silakan pilih berdasarkan pilihan yang tersedia!')
+            print('\nSilakan pilih berdasarkan pilihan yang tersedia!')
 
     else:
         print('\nData bank sampah belum ada, silakan masukkan data dengan benar!')
@@ -612,6 +625,7 @@ def ecoscalc():
 
 
 # ! CHOICE START
+
 
 def choiceAdmin():
     print('\n' + 30 * '=')
@@ -697,6 +711,7 @@ def choicePengelola():
 
 chance = {'chance': 2}
 
+
 def login():
     users = pd.read_csv('users.csv', sep=';')
 
@@ -767,7 +782,7 @@ def register():
                 chance['chance'] -= 1
                 regis2()
             elif(not re.match(r'^\w{3,30}$', uname)):
-                print('Username hanya boleh mengandung huruf, angka dan garis bawah! Minimal 3 karakter, Maximal 50 karakter!')
+                print('\nUsername hanya boleh mengandung huruf, angka dan garis bawah! Minimal 3 karakter, Maximal 50 karakter!')
                 chance['chance'] -= 1
                 regis2()
             else:
