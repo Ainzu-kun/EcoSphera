@@ -42,9 +42,17 @@ def rating():
             elif(auth['auth'] == 'user'):
                 choiceUser()
         else:
-            user_rating = input(f'\nMasukkan rating untuk {bank_sampah['nama bank sampah'][int(choice)]}(1-5): ')
+            user_rating = input(f'\nMasukkan rating untuk {bank_sampah['nama bank sampah'][int(choice)]}(1-5) (q untuk quit): ')
 
-            if(user_rating == '1' or user_rating == '2' or user_rating == '3' or user_rating == '4' or user_rating == '5'):
+            if(user_rating == 'q'):
+                rating()
+            elif(user_rating.replace(' ', '') == ''):
+                print('\nRating tidak boleh kosong!')
+                rating()
+            elif(not re.match(r'^\d{1}$', user_rating)):
+                print('\nSilakan rating menggunakan angka yang sudah ditentukan!')
+                rating()
+            elif(user_rating == '1' or user_rating == '2' or user_rating == '3' or user_rating == '4' or user_rating == '5'):
                 data = [[user_login['username'], choice, int(user_rating)]]
 
                 new_data = pd.DataFrame(data, columns=header)
