@@ -1,8 +1,211 @@
 import pandas as pd
 import re
+import os
 
 auth = {'auth': 'user'}
 user_login = {'username': ''}
+
+
+def kelolaBank():
+    bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';')
+    header = ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']
+    bank_sampah_pengelola = bank_sampah[bank_sampah['nama pengelola'] == user_login['username']]
+
+    if(bank_sampah_pengelola.empty):
+        step = input('\n[1]Ya\n[2]Tidak\nAnda belum memiliki bank sampah yang dikelola! Apakah ingin membuat bank sampah sekarang? ')
+
+        if(step.replace(' ', '') == ''):
+            print('Inputan tidak boleh kosong!')
+            kelolaBank()
+        elif(not re.match(r'^\d{1}$', step)):
+            print('Inputan hanya boleh mengandung angka! Maximal 1 angka!')
+            kelolaBank()
+        elif(step == '1'):
+            nama_bank = input('\nMasukan nama bank sampah: ')
+            nama_pengelola = user_login['username']
+            lokasi = input('Masukkan lokasi bank sampah: ')
+            kontak = input('Masukkan kontak pengelola bank sampah: ')
+            organik = input('Masukkan harga sampah organik: ')
+            non_organik = input('Masukkan harga sampah non organik: ')
+            rating = 0
+
+            if(nama_bank.replace(' ', '') == '' or lokasi.replace(' ', '') == '' or kontak.replace(' ', '') == '' or organik.replace(' ', '') == '' or non_organik.replace(' ', '') == ''):
+                print('\nInputan tidak boleh kosong! Mohon isi data dengan benar!')
+                kelolaBank()
+            elif(not re.match(r'^[a-zA-Z\s]{3,}$', nama_bank)):
+                print('Nama bank sampah hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+                kelolaBank()
+            elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', lokasi)):
+                print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                kelolaBank()
+            elif(not re.match(r'^\d{7,15}$', kontak)):
+                print('Kontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+                kelolaBank()
+            elif(not re.match(r'^\d{4,}$', organik or non_organik)):
+                print('Harga sampah hanya boleh berisi angka, minimal 4 angka!')
+                kelolaBank()
+            elif(not re.match(r'^[1-9][0-9]*$', organik or non_organik)):
+                print('Harga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+                kelolaBank()
+
+            data = [[nama_bank, nama_pengelola, lokasi, f'{kontak}', organik, non_organik, rating]]
+
+            new_data =  pd.DataFrame(data, columns=header)
+            new_data.to_csv('data_bank_sampah.csv', mode='a', sep=';', header=False, index=False)
+
+            print('\nData bank sampah berhasil dibuat!')
+            kelolaBank()
+        elif(step == '2'):
+            choicePengelola()
+        else:
+            print('\nSilakan pilih berdasarkan angka yang tersedia!')
+            kelolaBank()
+    else:
+        print('\n' + 30 * '=')
+        choice = input('\n[1]Tambah data bank sampah\n[2]Lihat data bank sampah\n[3]Update data bank sampah\n[4]Hapus data bank sampah\n[5]Kembali\nSilakan pilih fitur berdasarkan angka: ')
+
+        # Validasi choice gaboleh kosong
+        if(choice.replace(' ', '') == ''):
+            print('\nInputan tidak boleh kosong!')
+            kelolaBank()
+
+        # Validasi choice harus angka dan 1 angka aja
+        elif(not re.match(r'^\d{1}$', choice)):
+            print('\nInput hanya boleh berisi angka! Maximal 1 angka!')
+            kelolaBank()
+
+        # Create data bank sampah pengelola
+        elif(choice == '1'):
+            nama_bank = input('\nMasukan nama bank sampah: ')
+            nama_pengelola = user_login['username']
+            lokasi = input('Masukkan lokasi bank sampah: ')
+            kontak = input('Masukkan kontak pengelola bank sampah: ')
+            organik = input('Masukkan harga sampah organik: ')
+            non_organik = input('Masukkan harga sampah non organik: ')
+            rating = 0
+
+            if(nama_bank.replace(' ', '') == '' or lokasi.replace(' ', '') == '' or kontak.replace(' ', '') == '' or organik.replace(' ', '') == '' or non_organik.replace(' ', '') == ''):
+                print('\nInputan tidak boleh kosong! Mohon isi data dengan benar!')
+                kelolaBank()
+            elif(not re.match(r'^[a-zA-Z\s]{3,}$', nama_bank)):
+                print('\nNama bank sampah hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+                kelolaBank()
+            elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', lokasi)):
+                print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                kelolaBank()
+            elif(not re.match(r'^\d{7,15}$', kontak)):
+                print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+                kelolaBank()
+            elif(not re.match(r'^\d{4,}$', organik or non_organik)):
+                print('\nHarga sampah hanya boleh berisi angka, minimal 4 angka!')
+                kelolaBank()
+            elif(not re.match(r'^[1-9][0-9]*$', organik or non_organik)):
+                print('\nHarga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+                kelolaBank()
+
+            data = [[nama_bank, nama_pengelola, lokasi, f'{kontak}', organik, non_organik, rating]]
+
+            new_data =  pd.DataFrame(data, columns=header)
+            new_data.to_csv('data_bank_sampah.csv', mode='a', sep=';', header=False, index=False)
+
+            print('\nData bank sampah berhasil dibuat!')
+            kelolaBank()
+
+        # Lihat data bank sampah pengelola
+        elif(choice == '2'):
+            print('\n', bank_sampah_pengelola)
+            kelolaBank()
+
+        # Edit Pengelola
+        elif(choice == '3'):
+            print('\n', bank_sampah_pengelola)
+            selected_bank = input('\nPilih bank sampah yang ingin di update berdasarkan nomor bank sampah (q jika tidak ada): ')
+
+            if(selected_bank.replace(' ', '') == ''):
+                print('\nInputan tidak boleh kosong!')
+                kelolaBank()
+            elif(not re.match(r'^\d{1}$', selected_bank)):
+                print('\nInput hanya boleh berisi angka! Maximal 1 angka!')
+                kelolaBank()
+            elif(int(selected_bank) in bank_sampah_pengelola.index):
+                data_dipilih = bank_sampah.iloc[int(selected_bank)]
+
+                nama_bank = data_dipilih['nama bank sampah']
+                nama_pengelola = data_dipilih['nama pengelola']
+                lokasi = data_dipilih['lokasi']
+                kontak = data_dipilih['kontak pengelola']
+                harga_organik = data_dipilih['harga sampah organik']
+                harga_non_organik = data_dipilih['harga sampah non-organik']
+                rating = data_dipilih['rating']
+
+                print('\nSilakan isi data terbaru, kosongkan jika tidak ada perubahan')
+                new_nama_bank = input(f'Masukkan nama bank sampah baru ({nama_bank}): ') or nama_bank
+                new_lokasi = input(f'Masukkan lokasi bank sampah baru ({lokasi}): ') or lokasi
+                new_kontak = input(f'Masukkan kontak baru pengelola bank sampah ({kontak}): ') or kontak
+                new_harga_organik = input(f'Masukkan harga baru sampah organik ({harga_organik}): ') or harga_organik
+                new_harga_non_organik = input(f'Masukkan harga baru sampah non organik ({harga_non_organik}): ') or harga_non_organik
+
+
+                if(new_nama_bank.replace(' ', '') == '' or new_lokasi.replace(' ', '') == '' or new_kontak.replace(' ', '') == '' or new_harga_organik.replace(' ', '') == '' or new_harga_non_organik.replace(' ', '') == ''):
+                    print('\nInput tidak boleh kosong atau spasi saja! Mohon input data dengan benar!')
+                    kelolaBank()
+                elif(not re.match(r'^[a-zA-Z\s]{3,}$', new_nama_bank)):
+                    print('\nNama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+                    kelolaBank()
+                elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', new_lokasi)):
+                    print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                    kelolaBank()
+                elif(not re.match(r'^\d{7,15}$', str(new_kontak))):
+                    print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+                    kelolaBank()
+                elif(not re.match(r'^\d{4,}$', str(new_harga_organik) or str(new_harga_non_organik))):
+                    print('\nHarga sampah hanya boleh berisi angka, minimal 4 angka!')
+                    kelolaBank()
+                elif(not re.match(r'^[1-9][0-9]*$', str(new_harga_organik) or str(new_harga_non_organik))):
+                    print('\nHarga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+                    kelolaBank()
+
+                bank_sampah.loc[int(selected_bank), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']] = [new_nama_bank, nama_pengelola, new_lokasi, new_kontak, new_harga_organik, new_harga_non_organik, rating]
+                bank_sampah.to_csv('data_bank_sampah.csv', index=False, sep=';')
+
+                print('\nData bank sampah Anda berhasil diperbarui!')
+                kelolaBank()
+            else:
+                print('\nSilakan pilih bank sampah yang tersedia!')
+                kelolaBank()
+
+        # Hapus data bank sampah pengelola
+        elif(choice == '4'):
+            print('\n', bank_sampah_pengelola)
+            delete_index = input('\nPilih nomor bank sampah yang ingin dihapus (q jika tidak ada): ')
+
+            if(delete_index.lower() == 'q'):
+                kelolaBank()
+            elif(delete_index.replace(' ', '') == ''):
+                print('\nInput tidak boleh kosong!')
+                kelolaBank()
+            elif(not re.match(r'^\d{1}$', delete_index)):
+                print('\nInput hanya boleh berisi angka! Maximal 1 angka!')
+                kelolaBank()
+            elif(int(delete_index) in bank_sampah_pengelola.index):
+                delete_bank_sampah = bank_sampah.drop(index=int(delete_index))
+                delete_bank_sampah.to_csv('data_bank_sampah.csv', sep=';', index=False)
+
+                print('\nData bank sampah berhasil dihapus!')
+                kelolaBank()
+            else:
+                print('\nData bank sampah tidak ada dalam pilihan!')
+                kelolaBank()
+        
+        # Kembali
+        elif(choice == '5'):
+            choicePengelola()
+
+        # Validasi angka <= 1 & >= 5
+        else:
+            print('Silakan pilih opsi sesuai angka yang ada!')
+            kelolaBank()
+
 
 def rating():
     header = ['uname_user', 'id_bank', 'rating']
@@ -22,7 +225,7 @@ def rating():
         elif(auth['auth'] == 'user'):
             choiceUser()
         else:
-            pass
+            exit()
     elif(not re.match(r'^\d{1}$', choice)):
         print('\nSilakan isi berdasarkan angka, hanya boleh berisi 1 angka!')
         rating()
@@ -42,9 +245,17 @@ def rating():
             elif(auth['auth'] == 'user'):
                 choiceUser()
         else:
-            user_rating = input(f'\nMasukkan rating untuk {bank_sampah['nama bank sampah'][int(choice)]}(1-5): ')
+            user_rating = input(f'\nMasukkan rating untuk {bank_sampah['nama bank sampah'][int(choice)]}(1-5) (q untuk quit): ')
 
-            if(user_rating == '1' or user_rating == '2' or user_rating == '3' or user_rating == '4' or user_rating == '5'):
+            if(user_rating == 'q'):
+                rating()
+            elif(user_rating.replace(' ', '') == ''):
+                print('\nRating tidak boleh kosong!')
+                rating()
+            elif(not re.match(r'^\d{1}$', user_rating)):
+                print('\nSilakan rating menggunakan angka yang sudah ditentukan!')
+                rating()
+            elif(user_rating == '1' or user_rating == '2' or user_rating == '3' or user_rating == '4' or user_rating == '5'):
                 data = [[user_login['username'], choice, int(user_rating)]]
 
                 new_data = pd.DataFrame(data, columns=header)
@@ -88,7 +299,12 @@ def search():
         nama_bank = input('Masukkan nama bank sampah yang ingin dicari (q untuk quit): ')
 
         if(nama_bank == 'q'):
-            choiceAdmin()
+            if(auth['auth'] == 'admin'):
+                choiceAdmin()
+            elif(auth['auth'] == 'user'):
+                choiceUser()
+            elif(auth['auth'] == 'pengelola'):
+                choicePengelola()
         elif(nama_bank.replace(' ', '') == ''):
             print('\nInput pencarian tidak boleh kosong!')
             search()
@@ -106,7 +322,12 @@ def search():
         nama_pengelola = input('Masukkan nama pengelola bank sampah yang ingin dicari (q untuk quit): ')
 
         if(nama_pengelola == 'q'):
-            choiceAdmin()
+            if(auth['auth'] == 'admin'):
+                choiceAdmin()
+            elif(auth['auth'] == 'user'):
+                choiceUser()
+            elif(auth['auth'] == 'pengelola'):
+                choicePengelola()
         elif(nama_pengelola.replace(' ', '') == ''):
             print('\nInput pencarian tidak boleh kosong!')
             search()
@@ -124,7 +345,12 @@ def search():
         lokasi = input('Masukkan lokasi bank sampah yang ingin dicari (q untuk quit): ')
 
         if(lokasi == 'q'):
-            choiceAdmin()
+            if(auth['auth'] == 'admin'):
+                choiceAdmin()
+            elif(auth['auth'] == 'user'):
+                choiceUser()
+            elif(auth['auth'] == 'pengelola'):
+                choicePengelola()
         elif(lokasi.replace(' ', '') == ''):
             print('\nInput pencarian tidak boleh kosong!')
             search()
@@ -142,7 +368,12 @@ def search():
         harga_organik = input('Masukkan harga sampah organik yang ingin dicari (q untuk quit): ')
 
         if(harga_organik == 'q'):
-            choiceAdmin()
+            if(auth['auth'] == 'admin'):
+                choiceAdmin()
+            elif(auth['auth'] == 'user'):
+                choiceUser()
+            elif(auth['auth'] == 'pengelola'):
+                choicePengelola()
         elif(harga_organik.replace(' ', '') == ''):
             print('\nInput pencarian tidak boleh kosong!')
             search()
@@ -163,7 +394,12 @@ def search():
         harga_non_organik = input('Masukkan harga sampah non organik yang ingin dicari (q untuk quit): ')
 
         if(harga_non_organik == 'q'):
-            choiceAdmin()
+            if(auth['auth'] == 'admin'):
+                choiceAdmin()
+            elif(auth['auth'] == 'user'):
+                choiceUser()
+            elif(auth['auth'] == 'pengelola'):
+                choicePengelola()
         elif(harga_non_organik.replace(' ', '') == ''):
             print('\nInput pencarian tidak boleh kosong!')
             search()
@@ -185,6 +421,8 @@ def search():
             choiceAdmin()
         elif(auth['auth'] == 'user'):
             choiceUser()
+        elif(auth['auth'] == 'pengelola'):
+            choicePengelola()
     else:
         print('\nSilakan pilih kategori berdasarkan angka yang tersedia!')
         search()
@@ -211,19 +449,19 @@ def crud():
             print('\nInputan tidak boleh kosong! Mohon isi data dengan benar!')
             crud()
         elif(not re.match(r'^[a-zA-Z\s]{3,}$', nama_bank or nama_pengelola)):
-            print('Nama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+            print('\nNama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
             crud()
-        elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s]{10,}$', lokasi)):
-            print('Lokasi hanya boleh berisi huruf, spasi dan angka, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+        elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', lokasi)):
+            print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
             crud()
         elif(not re.match(r'^\d{7,15}$', kontak)):
-            print('Kontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+            print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
             crud()
         elif(not re.match(r'^\d{4,}$', organik or non_organik)):
-            print('Harga sampah hanya boleh berisi angka, minimal 4 angka!')
+            print('\nHarga sampah hanya boleh berisi angka, minimal 4 angka!')
             crud()
         elif(not re.match(r'^[1-9][0-9]*$', organik or non_organik)):
-            print('Harga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+            print('\nHarga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
             crud()
 
         data = [[nama_bank, nama_pengelola, lokasi, f'{kontak}', organik, non_organik, rating]]
@@ -241,7 +479,13 @@ def crud():
         print(bank_sampah)
         selected_bank = input('\nPilih bank sampah yang ingin di update berdasarkan nomor bank sampah (q jika tidak ada): ')
 
-        if(selected_bank == 'q'):
+        if(selected_bank.lower() == 'q'):
+            crud()
+        elif(selected_bank.replace(' ', '') == ''):
+            print('\nNomor bank sampah tidak boleh kosong!')
+            crud()
+        elif(not re.match(r'^\d{1}$', selected_bank)):
+            print('\nSilakan isi menggunakan angka!')
             crud()
         elif(int(selected_bank) in bank_sampah.index):
             data_dipilih = bank_sampah.iloc[int(selected_bank)]
@@ -262,11 +506,30 @@ def crud():
             new_harga_organik = input(f'Masukkan harga baru sampah organik ({harga_organik}): ') or harga_organik
             new_harga_non_organik = input(f'Masukkan harga baru sampah non organik ({harga_non_organik}): ') or harga_non_organik
 
-            bank_sampah.loc[int(selected_bank), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']] = [new_nama_bank, new_nama_pengelola, new_lokasi, int(new_kontak), int(new_harga_organik), int(new_harga_non_organik), rating]
+            if(new_nama_bank.replace(' ', '') == '' or new_nama_pengelola.replace(' ', '') == '' or new_lokasi.replace(' ', '') == '' or new_kontak.replace(' ', '') == '' or new_harga_organik.replace(' ', '') == '' or new_harga_non_organik.replace(' ', '') == ''):
+                print('\nInputan tidak boleh kosong atau spasi saja! Mohon isi data dengan benar!')
+                crud()
+            elif(not re.match(r'^[a-zA-Z\s]{3,}$', new_nama_bank or new_nama_pengelola)):
+                print('\nNama bank sampah dan nama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf!')
+                crud()
+            elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,}$', new_lokasi)):
+                print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                crud()
+            elif(not re.match(r'^\d{7,15}$', str(new_kontak))):
+                print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
+                crud()
+            elif(not re.match(r'^\d{4,}$', str(new_harga_organik) or str(new_harga_non_organik))):
+                print('\nHarga sampah hanya boleh berisi angka, minimal 4 angka!')
+                crud()
+            elif(not re.match(r'^[1-9][0-9]*$', str(new_harga_organik) or str(new_harga_non_organik))):
+                print('\nHarga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+                crud()
+
+            bank_sampah.loc[int(selected_bank), ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']] = [new_nama_bank, new_nama_pengelola, new_lokasi, new_kontak, new_harga_organik, new_harga_non_organik, rating]
 
             bank_sampah.to_csv('data_bank_sampah.csv', index=False, sep=';')
 
-            print('\nData berhasil diperbarui!!!')
+            print('\nData bank sampah berhasil diperbarui!!!')
             crud()
         else:
             print('\nData belum ada, silakan masukkan data dengan benar!')
@@ -279,10 +542,19 @@ def crud():
 
         if(delete_index.lower() == 'q'):
             crud()
-        else:
+        elif(delete_index.replace(' ', '') == ''):
+            print('Nomor bank sampah tidak boleh kosong!')
+            crud()
+        elif(not re.match(r'^\d{1}$', delete_index)):
+            print('Silakan isi menggunakan angka!')
+            crud()
+        elif(int(delete_index) in bank_sampah):
             delete_bank_sampah = bank_sampah.drop(index=int(delete_index))
             delete_bank_sampah.to_csv('data_bank_sampah.csv', sep=';', index=False)
             print('\n' + 'Data bank sampah berhasil dihapus!!!')
+            crud()
+        else:
+            print('Tidak ada data bank sampah! Silakan pilih nomor bank sampah yang sesuai!')
             crud()
     elif(choice == '5'):
         if(auth['auth'] == 'admin'):
@@ -298,12 +570,17 @@ def ecoscalc():
     print(bank_sampah)
     selected_bank = input('\nPilih bank sampah berdasarkan nomor bank sampah (q jika tidak ada): ')
 
-    if(selected_bank == 'q'):
+    if(selected_bank.lower() == 'q'):
         if(auth['auth'] == 'admin'):
             choiceAdmin()
         elif(auth['auth'] == 'user'):
             choiceUser()
-    elif(not re.match(r'^\d+$', selected_bank)):
+        elif(auth['auth'] == 'pengelola'):
+            choicePengelola()
+    elif(selected_bank.replace(' ', '') == ''):
+        print('Nomor bank sampah tidak boleh kosong!')
+        ecoscalc()
+    elif(not re.match(r'^\d{1}$', selected_bank)):
         print('\nSilakan pilih bank sampah menggunakan angka!')
         ecoscalc()
     elif(int(selected_bank) in bank_sampah.index):
@@ -318,21 +595,29 @@ def ecoscalc():
         if(not re.match(r'^\d+$', input_organik or input_non_organik)):
             print('\nHarap masukkan harga sampah menggunakan angka!')
             ecoscalc()
+        elif(not re.match(r'^[1-9][0-9]*$', input_organik or input_non_organik)):
+            print('Harga sampah tidak boleh didahului angka 0! Harap masukkan harga dengan benar!')
+            ecoscalc()
 
-        print(f'\nTotal harga sampah organik anda adalah Rp.{harga_organik * input_organik}')
-        print(f'Total harga sampah non-organik anda adalah Rp.{harga_non_organik * input_non_organik}')
+        print(f'\nTotal harga sampah organik anda adalah Rp.{harga_organik * int(input_organik):,.0f}')
+        print(f'Total harga sampah non-organik anda adalah Rp.{harga_non_organik * int(input_non_organik):,.0f}')
 
         next_step = input('\n[1]Ya\n[2]Tidak\nApakah anda ingin menghitung lagi? ')
 
-        if(next_step == '1'):
+        if(next_step.replace(' ', '') == ''):
+            print('\nInput tidak boleh kosong!')
+            ecoscalc()
+        elif(next_step == '1'):
             ecoscalc()
         elif(next_step == '2'):
             if(auth['auth'] == 'admin'):
                 choiceAdmin()
             elif(auth['auth'] == 'user'):
                 choiceUser()
+            elif(auth['auth'] == 'pengelola'):
+                choicePengelola()
         else:
-            print('Silakan pilih berdasarkan pilihan yang tersedia!')
+            print('\nSilakan pilih berdasarkan pilihan yang tersedia!')
 
     else:
         print('\nData bank sampah belum ada, silakan masukkan data dengan benar!')
@@ -340,6 +625,7 @@ def ecoscalc():
 
 
 # ! CHOICE START
+
 
 def choiceAdmin():
     print('\n' + 30 * '=')
@@ -360,7 +646,7 @@ def choiceAdmin():
         elif(int(choice) == 6):
             print('\n' + 30 * '=')
             print('\nTerimakasih telah menggunakan EcoSphera!\n')
-            pass
+            exit()
     else:
         print('\nSilakan pilih berdasarkan angka atau pilihan yang tersedia')
         choiceAdmin()
@@ -387,21 +673,44 @@ def choiceUser():
         elif(int(choice) == 6):
             print('\n' + 30 * '=')
             print('\nTerimakasih telah menggunakan EcoSphera!\n')
-            pass
+            exit()
     else:
         print('\nSilakan pilih berdasarkan angka atau pilihan yang tersedia')
         choiceUser()
 
 
 def choicePengelola():
+    bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';')
+
     print('\n' + 30 * '=')
     choice = input('\n[1]EcosCalc\n[2]Kelola Bank Sampah\n[3]Lihat Bank Sampah\n[4]Search Bank Sampah\n[5]Logout\n[6]Exit\nSilakan pilih fitur berdasarkan angka: ')
-    pass
+
+    if(choice == '1' or choice == '2' or choice == '3' or choice == '4' or choice == '5' or choice == '6'):
+        if(int(choice) == 1):
+            ecoscalc()
+        elif(int(choice) == 2):
+            kelolaBank()
+        elif(int(choice) == 3):
+            print('\n', bank_sampah)
+            choicePengelola()
+        elif(int(choice) == 4):
+            search()
+        elif(int(choice) == 5):
+            print('\nLogout berhasil!!!')
+            login()
+        elif(int(choice) == 6):
+            print('\n' + 30 * '=')
+            print('\nTerimakasih telah menggunakan EcoSphera!\n')
+            exit()
+    else:
+        print('\nSilakan pilih berdasarkan angka atau pilihan yang tersedia')
+        choiceAdmin()
 
 
 # ! CHOICE END
 
 chance = {'chance': 2}
+
 
 def login():
     users = pd.read_csv('users.csv', sep=';')
@@ -424,7 +733,9 @@ def login():
     else:
         if(not validate.empty):
             print('\n' + 30 * '=')
-            print('Login berhasil!!!')
+            print('\nLogin berhasil!!!')
+
+            chance['chance'] = 2
             role = validate.iloc[0]['role']
 
             user_login['username'] = uname
@@ -470,8 +781,8 @@ def register():
                 print('\nUsername atau password tidak boleh kosong!')
                 chance['chance'] -= 1
                 regis2()
-            elif(not re.match(r'^\w+$', uname)):
-                print('Username hanya boleh mengandung huruf, angka dan garis bawah!?')
+            elif(not re.match(r'^\w{3,30}$', uname)):
+                print('\nUsername hanya boleh mengandung huruf, angka dan garis bawah! Minimal 3 karakter, Maximal 50 karakter!')
                 chance['chance'] -= 1
                 regis2()
             else:
@@ -493,7 +804,7 @@ def register():
         choice1()
     elif(regisChoice == '4'):
         print('\nTerimakasih telah menggunakan EcoSphera!\n')
-        pass
+        exit()
     else:
         print('\nSilakan pilih berdasarkan angka yang tersedia!!!')
         register()
@@ -512,9 +823,9 @@ def choice1():
             login()
         elif(int(choice) == 3):
             print('\nTerimakasih telah menggunakan EcoSphera!\n')
-            pass
+            exit()
     else:
-        print('\nSilakan opsi yang tersedia!')
+        print('\nSilakan pilih opsi yang tersedia!')
         choice1()
 
 
