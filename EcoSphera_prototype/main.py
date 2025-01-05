@@ -6,6 +6,7 @@ user_login = {'username': ''}
 
 def kelolaBank():
     bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';', dtype={'kontak pengelola': str})
+    rating = pd.read_csv('rating.csv', sep=';')
     header = ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']
     bank_sampah_pengelola = bank_sampah[bank_sampah['nama pengelola'] == user_login['username']]
 
@@ -46,7 +47,7 @@ def kelolaBank():
                 print('Nama bank sampah hanya boleh berisi huruf dan spasi! Minimal 3 huruf, maximal 20 huruf!')
                 kelolaBank()
             elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,255}$', lokasi)):
-                print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                print('\nLokasi hanya boleh berisi huruf, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
                 kelolaBank()
             elif(not re.match(r'^\d{7,15}$', kontak)):
                 print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
@@ -119,7 +120,7 @@ def kelolaBank():
                 print('\nNama bank sampah hanya boleh berisi huruf dan spasi! Minimal 3 huruf, maximal 20 huruf!')
                 kelolaBank()
             elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,255}$', lokasi)):
-                print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                print('\nLokasi hanya boleh berisi huruf, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
                 kelolaBank()
             elif(not re.match(r'^\d{7,15}$', kontak)):
                 print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
@@ -196,7 +197,7 @@ def kelolaBank():
                     print('\nNama bank sampah hanya boleh berisi huruf dan spasi! Minimal 3 huruf, maximal 20 huruf!')
                     kelolaBank()
                 elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,255}$', new_lokasi)):
-                    print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                    print('\nLokasi hanya boleh berisi huruf, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
                     kelolaBank()
                 elif(not re.match(r'^\d{7,15}$', str(new_kontak))):
                     print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
@@ -239,6 +240,10 @@ def kelolaBank():
             elif(int(delete_index) in bank_sampah_pengelola.index):
                 delete_bank_sampah = bank_sampah.drop(index=int(delete_index))
                 delete_bank_sampah.to_csv('data_bank_sampah.csv', sep=';', index=False)
+
+                rating = rating[rating['id_bank'] != int(delete_index)]
+                rating.loc[rating['id_bank'] > int(delete_index), 'id_bank'] -= 1
+                rating.to_csv('rating.csv', sep=';', index=False)
 
                 print('\nData bank sampah berhasil dihapus!')
                 kelolaBank()
@@ -478,6 +483,7 @@ def search():
 
 def crud():
     bank_sampah = pd.read_csv('data_bank_sampah.csv', sep=';', dtype={'kontak pengelola': str})
+    rating = pd.read_csv('rating.csv', sep=';')
     header = ['nama bank sampah', 'nama pengelola', 'lokasi', 'kontak pengelola', 'harga sampah organik', 'harga sampah non-organik', 'rating']
 
     print('\n' + 30 * '=')
@@ -604,7 +610,7 @@ def crud():
                 print('\nNama pengelola hanya boleh berisi huruf dan spasi! Minimal 3 huruf, maximal 20 huruf!')
                 crud()
             elif(not re.match(r'^(?=(?:[^a-zA-Z]*[a-zA-Z]){3})[a-zA-Z0-9\s,\.(\)]{10,255}$', new_lokasi)):
-                print('\nLokasi hanya boleh berisi huruf, spasi, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
+                print('\nLokasi hanya boleh berisi huruf, angka, koma, spasi dan tanda kurung, setidaknya memiliki 3 huruf! Minimal 10 karakter!')
                 crud()
             elif(not re.match(r'^\d{7,15}$', str(new_kontak))):
                 print('\nKontak hanya boleh berisi angka, minimal berisi 7 angka dan maksimal 15 angka!')
@@ -645,19 +651,28 @@ def crud():
         elif(not re.match(r'^\d+$', delete_index)):
             print('Silakan isi menggunakan angka!')
             crud()
-        elif(int(delete_index) in bank_sampah):
+        elif(int(delete_index) in bank_sampah.index):
             delete_bank_sampah = bank_sampah.drop(index=int(delete_index))
             delete_bank_sampah.to_csv('data_bank_sampah.csv', sep=';', index=False)
+
+            rating = rating[rating['id_bank'] != int(delete_index)]
+            rating.loc[rating['id_bank'] > int(delete_index), 'id_bank'] -= 1
+
+            rating.to_csv('rating.csv', sep=';', index=False)
+            
             print('\n' + 'Data bank sampah berhasil dihapus!!!')
             crud()
         else:
-            print('Tidak ada data bank sampah! Silakan pilih nomor bank sampah yang sesuai!')
+            print('\nTidak ada data bank sampah! Silakan pilih nomor bank sampah yang sesuai!')
             crud()
     elif(choice == '5'):
         if(auth['auth'] == 'admin'):
             choiceAdmin()
         elif(auth['auth'] == 'pengelola'):
             choicePengelola()
+    else:
+        print('Silakan pilih sesuai opsi yang tersedia!')
+        crud()
 
 
 def ecoscalc():
@@ -835,8 +850,12 @@ def login():
     if(chance['chance'] == 0):
         chance['chance'] = 2
         choice1()
-    elif(uname.replace(' ', '') == '' or pw.replace(' ', '') == ''):
-        print(f'\nUsername atau password tidak boleh kosong! Silakan coba lagi! Kesempatan anda {chance['chance']}x lagi!')
+    elif(uname.replace(' ', '') == ''):
+        print(f'\nUsername tidak boleh kosong! Silakan coba lagi! Kesempatan anda {chance['chance']}x lagi!')
+        chance['chance'] -= 1
+        login()
+    elif(pw.replace(' ', '') == ''):
+        print(f'\nPassword tidak boleh kosong! Silakan coba lagi! Kesempatan anda {chance['chance']}x lagi!')
         chance['chance'] -= 1
         login()
     else:
@@ -886,8 +905,12 @@ def register():
                 print('\nUsername sudah terdaftar! Silakan pakai username baru!')
                 chance['chance'] -= 1
                 regis2()
-            elif(uname.replace(' ', '') == '' or pw.replace(' ', '') == ''):
-                print('\nUsername atau password tidak boleh kosong!')
+            elif(uname.replace(' ', '') == ''):
+                print('\nUsername tidak boleh kosong!')
+                chance['chance'] -= 1
+                regis2()
+            elif(pw.replace(' ', '') == ''):
+                print('\nPassword tidak boleh kosong!')
                 chance['chance'] -= 1
                 regis2()
             elif(not re.match(r'^\w{3,20}$', uname)):
